@@ -1,10 +1,7 @@
 A basic 2D light / shadow implementation.
 
-![Screen0][]
-
-![Screen1][]
-
-
+![Screenshot 0](https://github.com/bakercp/ofxLight2D/raw/master/screen0.png)
+![Screenshot 1](https://github.com/bakercp/ofxLight2D/raw/master/screen1.png)
 
 Based on:
 - [http://ncase.me/sight-and-light/](http://ncase.me/sight-and-light/)
