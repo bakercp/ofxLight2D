@@ -282,7 +282,7 @@ void LightSystem2D::makeMask(Light2D::SharedPtr light,
             numBoundaryEdges += poly.size();
         }
 
-        for(int offset = 0; offset <= numBoundaryEdges; ++offset)
+		for(std::size_t offset = 0; offset <= numBoundaryEdges; ++offset)
         {
             int boundaryIndex = (secondBoundaryIndex + offset) % poly.size();
 

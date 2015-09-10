@@ -35,7 +35,6 @@ Shape2D::Shape2D():
     _color(.5, 1),
     _isMeshDirty(true)
 {
-
 }
 
 
@@ -105,7 +104,7 @@ void Shape2D::createMesh() const
 
     _mesh.addColor(_color);
 
-    for (int i = 0; i < _shape.size(); ++i)
+	for (std::size_t i = 0; i < _shape.size(); ++i)
     {
         _mesh.addVertex(_shape[i]);
         _mesh.addColor(color);
