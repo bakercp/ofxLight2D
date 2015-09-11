@@ -1,6 +1,6 @@
 A basic 2D light / shadow implementation.
 
-[![Demo](https://github.com/bakercp/ofxLight2D/raw/master/screen1.png)](https://vimeo.com/138896608 "Demo - Click to Watch!")
+[![Demo](https://github.com/bakercp/ofxLight2D/raw/master/screen2.png)](https://vimeo.com/138896608 "Demo - Click to Watch!")
 
 ![Screenshot 0](https://github.com/bakercp/ofxLight2D/raw/master/screen0.png)
 ![Screenshot 1](https://github.com/bakercp/ofxLight2D/raw/master/screen1.png)
