@@ -48,7 +48,7 @@ public:
 
     ofx::Light2D::List wanderingLights;
 
-    ofx::Light2D::SharedPtr rotatingLight;
+    std::shared_ptr<ofx::Light2D> rotatingLight;
 
     ofx::LightSystem2D lightSystem;
 };

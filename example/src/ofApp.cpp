@@ -28,7 +28,6 @@
 
 void ofApp::setup()
 {
-//    ofSetVerticalSync(true);
     ofSetFrameRate(60);
 
     noiseIndex = 0;
@@ -38,22 +37,27 @@ void ofApp::setup()
     makeShapes();
 
 	rotatingLight = std::make_shared<ofx::Light2D>();
-    rotatingLight->setPosition(ofVec3f(2.0f * ofGetWidth() / 3, 2.0f * ofGetHeight() / 3));
+
+    rotatingLight->setPosition(glm::vec3(2.0f * ofGetWidth() / 3,
+                                         2.0f * ofGetHeight() / 3,
+                                         0));
+
     rotatingLight->setViewAngle(ofDegToRad(120));
     lightSystem.add(rotatingLight);
 
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 10; ++i)
     {
-        ofx::Light2D::SharedPtr light = std::make_shared<ofx::Light2D>();
+        auto light = std::make_shared<ofx::Light2D>();
 
-        ofVec3f position(ofRandomWidth(), ofRandomHeight(), 0);
+        glm::vec3 position(ofRandomWidth(), ofRandomHeight(), 0);
         ofFloatColor color(ofRandomuf(), ofRandomuf(), ofRandomuf(), 1);
 
         float radius = ofRandom(300, 1000);
         
-        float viewAngle = (ofRandom(1) > 0.5) ? TWO_PI : (ofRandom(PI/4, PI/3));
+        float viewAngle = (ofRandom(1) > 0.5) ? glm::two_pi<float>() : (ofRandom(glm::quarter_pi<float>(),
+                                                                                 glm::pi<float>() * glm::third<float>()));
 
-        float angle = ofRandom(TWO_PI);
+        float angle = ofRandom(glm::two_pi<float>());
 
         light->setAngle(angle);
         light->setViewAngle(viewAngle);
@@ -70,30 +74,30 @@ void ofApp::setup()
 
 void ofApp::update()
 {
-//    for (std::size_t i = 0; i < wanderingLights.size(); ++i)
-//    {
-//        Light2D::SharedPtr p = wanderingLights[i];
-//
-//        ofVec3f currentPostion = p->getPosition();
-//
-//        ofVec3f newPosition = currentPostion;
-//
-//        newPosition.x += ofSignedNoise(noiseIndex);
-//        newPosition.y += ofSignedNoise(noiseIndex + i);
-//
-//        float angle = currentPostion.angle(newPosition);
-//
-//        p->setAngle(angle);
-//        p->setPosition(newPosition);
-//    }
+    for (std::size_t i = 0; i < wanderingLights.size(); ++i)
+    {
+		auto p = wanderingLights[i];
+
+        auto currentPostion = p->getPosition();
+
+        auto newPosition = currentPostion;
+
+        newPosition.x += 2 * ofSignedNoise(noiseIndex);
+        newPosition.y += 2 * ofSignedNoise(noiseIndex + i);
+
+        float angle = glm::angle(currentPostion, newPosition);
+
+        p->setAngle(angle);
+        p->setPosition(newPosition);
+    }
 
     noiseIndex += noiseStep;
 
-    rotatingLight->setAngle(ofWrapRadians(rotatingLight->getAngle() + (PI / 360.0f)));
+    rotatingLight->setAngle(ofWrapRadians(rotatingLight->getAngle() + (glm::pi<float>() / 360.0f)));
 
-    rotatingLight->setPosition(ofVec3f(ofGetMouseX(),
-                                       ofGetMouseY(),
-                                       rotatingLight->getPosition().z));
+    rotatingLight->setPosition(glm::vec3(ofGetMouseX(),
+                                         ofGetMouseY(),
+                                         rotatingLight->getPosition().z));
 }
 
 
@@ -134,9 +138,9 @@ void ofApp::makeLights()
 {
     for (int i = 0; i < 2; ++i)
     {
-        ofx::Light2D::SharedPtr light = std::make_shared<ofx::Light2D>();
+        auto light = std::make_shared<ofx::Light2D>();
 
-        ofVec3f position(ofRandomWidth(), ofRandomHeight(), 0);
+        glm::vec3 position(ofRandomWidth(), ofRandomHeight(), 0);
         ofFloatColor color(ofRandomuf(), ofRandomuf(), ofRandomuf(), 1);
 
         float radius = ofRandom(300, 1000);
@@ -155,7 +159,7 @@ void ofApp::makeShapes()
 {
     for (int i = 0; i < 4; ++i)
     {
-        ofx::Shape2D::SharedPtr shape = std::make_shared<ofx::Shape2D>();
+        auto shape = std::make_shared<ofx::Shape2D>();
 
         ofRectangle rect;
         rect.setFromCenter(ofRandomWidth(),
