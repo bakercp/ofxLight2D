@@ -26,7 +26,6 @@
 #pragma once
 
 
-#include "ofVec2f.h"
 #include "ofColor.h"
 #include "ofMesh.h"
 #include "ofShader.h"
@@ -38,8 +37,7 @@ namespace ofx {
 class Light2D
 {
 public:
-	typedef std::shared_ptr<Light2D> SharedPtr;
-	typedef std::vector<SharedPtr> List;
+	typedef std::vector<std::shared_ptr<Light2D>> List;
 
     Light2D();
     virtual ~Light2D();
@@ -47,8 +45,8 @@ public:
     virtual void update();
     virtual void draw();
 
-    void setPosition(const ofVec3f& position);
-    const ofVec3f& getPosition() const;
+    void setPosition(const glm::vec3& position);
+    glm::vec3 getPosition() const;
 
     void setAngle(float angle);
     float getAngle() const;
@@ -75,7 +73,7 @@ public:
     static ofShader DEFAULT_LIGHT_SHADER;
 
 protected:
-    ofVec3f _position;
+    glm::vec3 _position;
     float _angle;
 
     float _radius;
@@ -86,8 +84,10 @@ protected:
     float _linearizeFactor;
 
     void createMesh() const;
+
     mutable bool _isMeshDirty;
     mutable ofMesh _mesh;
+
 };
 
 

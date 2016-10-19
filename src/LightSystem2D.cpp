@@ -61,21 +61,8 @@ void LightSystem2D::setup(ofEventArgs& args)
 
 void LightSystem2D::update(ofEventArgs& args)
 {
-    Light2D::List::const_iterator lightIter = _lights.begin();
-
-    while (lightIter != _lights.end())
-    {
-        (*lightIter)->update();
-        ++lightIter;
-    }
-
-    Shape2D::List::const_iterator shapeIter = _shapes.begin();
-
-    while (shapeIter != _shapes.end())
-    {
-        (*shapeIter)->update();
-        ++shapeIter;
-    }
+    for (auto light: _lights) light->update();
+    for (auto shape: _shapes) shape->update();
 }
 
 
@@ -85,25 +72,20 @@ void LightSystem2D::draw(ofEventArgs& args)
     ofClear(0, 0, 0, 0);
     _sceneComp.end();
 
-    Light2D::List::const_iterator lightIter = _lights.begin();
-
-    while (lightIter != _lights.end())
+    for (const auto& light: _lights)
     {
-        Shape2D::List::const_iterator shapeIter = _shapes.begin();
-
         _lightComp.begin();
         ofClear(0, 0, 0, 0);
 
-        (*lightIter)->draw();
+        light->draw();
 
         ofPushStyle();
         ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
-        while (shapeIter != _shapes.end())
+        for (const auto& shape: _shapes)
         {
             ofMesh mesh;
-            makeMask(*lightIter, *shapeIter, mesh);
+            makeMask(light, shape, mesh);
             mesh.draw();
-            ++shapeIter;
         }
         ofPopStyle();
 
@@ -115,19 +97,12 @@ void LightSystem2D::draw(ofEventArgs& args)
         _lightComp.draw(0, 0);
         ofPopStyle();
         _sceneComp.end();
-
-        ++lightIter;
     }
 
     _sceneComp.begin();
 
-    Shape2D::List::const_iterator shapeIter = _shapes.begin();
+    for (const auto& shape: _shapes) shape->draw();
 
-    while (shapeIter != _shapes.end())
-    {
-        (*shapeIter)->draw();
-        ++shapeIter;
-    }
     _sceneComp.end();
 
     _sceneComp.draw(0, 0);
@@ -135,13 +110,13 @@ void LightSystem2D::draw(ofEventArgs& args)
 }
 
 
-void LightSystem2D::add(Light2D::SharedPtr light)
+void LightSystem2D::add(std::shared_ptr<Light2D> light)
 {
     _lights.push_back(light);
 }
 
 
-void LightSystem2D::add(Shape2D::SharedPtr shape)
+void LightSystem2D::add(std::shared_ptr<Shape2D> shape)
 {
     _shapes.push_back(shape);
 }
@@ -159,32 +134,21 @@ void LightSystem2D::add(const Shape2D::List& shapes)
 }
 
 
-
-void LightSystem2D::remove(Light2D::SharedPtr light)
+void LightSystem2D::remove(std::shared_ptr<Light2D> light)
 {
-    Light2D::List::iterator iter = std::find(_lights.begin(), _lights.end(), light);
-
-    if (iter != _lights.end())
-    {
-        _lights.erase(iter);
-    }
+    _lights.erase(std::find(_lights.begin(), _lights.end(), light));
 }
 
 
-void LightSystem2D::remove(Shape2D::SharedPtr shape)
+void LightSystem2D::remove(std::shared_ptr<Shape2D> shape)
 {
-    Shape2D::List::iterator iter = std::find(_shapes.begin(), _shapes.end(), shape);
-
-    if (iter != _shapes.end())
-    {
-        _shapes.erase(iter);
-    }
+    _shapes.erase(std::find(_shapes.begin(), _shapes.end(), shape));
 }
 
 
 void LightSystem2D::remove(const Light2D::List& lights)
 {
-    Light2D::List::const_iterator lightIter = lights.begin();
+    auto lightIter = lights.begin();
 
     while (lightIter != lights.end())
     {
@@ -197,7 +161,7 @@ void LightSystem2D::remove(const Light2D::List& lights)
 
 void LightSystem2D::remove(const Shape2D::List& shapes)
 {
-    Shape2D::List::const_iterator shapeIter = shapes.begin();
+    auto shapeIter = shapes.begin();
 
     while (shapeIter != shapes.end())
     {
@@ -219,11 +183,11 @@ void LightSystem2D::clearShapes()
 }
 
 
-void LightSystem2D::makeMask(Light2D::SharedPtr light,
-                             Shape2D::SharedPtr shape,
+void LightSystem2D::makeMask(std::shared_ptr<Light2D> light,
+                             std::shared_ptr<Shape2D> shape,
                              ofMesh& mask)
 {
-    const ofPolyline& poly = shape->getShape();
+    const auto& poly = shape->getShape();
 
     // Create a list of all poly points that represent a "back facing" edge.
     std::vector<bool> backFacing(poly.size());
@@ -232,22 +196,20 @@ void LightSystem2D::makeMask(Light2D::SharedPtr light,
     {
         std::size_t next = (i + 1) % poly.size();
 
-        ofVec2f firstVertex(poly[i].x,
-                            poly[i].y);
+        glm::vec3 firstVertex(poly[i].x, poly[i].y, 0);
 
-        ofVec2f secondVertex(poly[next].x,
-                             poly[next].y);
+        glm::vec3 secondVertex(poly[next].x, poly[next].y, 0);
 
-        ofVec2f middle = (firstVertex + secondVertex) / 2;
+        glm::vec3 middle = (firstVertex + secondVertex) / 2;
 
-        ofVec2f lightVector = light->getPosition() - middle;
+        glm::vec3 lightVector = light->getPosition() - middle;
 
-        ofVec2f edgeNormal;
+        glm::vec3 edgeNormal;
 
         edgeNormal.x = - (secondVertex.y - firstVertex.y);
         edgeNormal.y =    secondVertex.x - firstVertex.x;
 
-        backFacing[i] = (edgeNormal.dot(lightVector) > 0);
+        backFacing[i] = (glm::dot(edgeNormal, lightVector) > 0);
     }
 
     std::size_t firstBoundaryIndex = std::numeric_limits<std::size_t>::max();
@@ -284,16 +246,16 @@ void LightSystem2D::makeMask(Light2D::SharedPtr light,
 
 		for(std::size_t offset = 0; offset <= numBoundaryEdges; ++offset)
         {
-            int boundaryIndex = (secondBoundaryIndex + offset) % poly.size();
+            std::size_t boundaryIndex = (secondBoundaryIndex + offset) % poly.size();
 
-            const ofVec2f& boundaryPoint = poly[boundaryIndex];
-            const ofVec2f& lightPoistion = light->getPosition();
+            const auto& boundaryPoint = poly[boundaryIndex];
+            const auto& lightPoistion = light->getPosition();
 
             // Create normalized ray from the light to the boundary point.
-            ofVec2f ray = boundaryPoint - lightPoistion;
+            auto ray = boundaryPoint - lightPoistion;
 
             // Normalize the ray.
-            ray.normalize();
+            ray = glm::normalize(ray);
 
             // Scale the ray by the light's radius.
             ray *= light->getRadius();

@@ -46,14 +46,14 @@ public:
     void update(ofEventArgs& args);
     void draw(ofEventArgs& args);
 
-    void add(Light2D::SharedPtr light);
-    void add(Shape2D::SharedPtr shape);
+    void add(std::shared_ptr<Light2D> light);
+    void add(std::shared_ptr<Shape2D> shape);
 
     void add(const Light2D::List& light);
     void add(const Shape2D::List& shape);
 
-    void remove(Light2D::SharedPtr light);
-    void remove(Shape2D::SharedPtr shape);
+    void remove(std::shared_ptr<Light2D> light);
+    void remove(std::shared_ptr<Shape2D> shape);
 
     void remove(const Light2D::List& lights);
     void remove(const Shape2D::List& shapes);
@@ -70,8 +70,8 @@ protected:
     ofFbo _lightComp;
     ofFbo _sceneComp;
 
-    static void makeMask(Light2D::SharedPtr light,
-                         Shape2D::SharedPtr shape,
+    static void makeMask(std::shared_ptr<Light2D> light,
+                         std::shared_ptr<Shape2D> shape,
                          ofMesh& mask);
 
 };

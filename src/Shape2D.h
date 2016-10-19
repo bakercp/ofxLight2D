@@ -26,7 +26,6 @@
 #pragma once
 
 
-#include "ofVec2f.h"
 #include "ofColor.h"
 #include "ofMesh.h"
 #include "ofPolyline.h"
@@ -38,8 +37,7 @@ namespace ofx {
 class Shape2D
 {
 public:
-    typedef std::shared_ptr<Shape2D> SharedPtr;
-    typedef std::vector<SharedPtr> List;
+    typedef std::vector<std::shared_ptr<Shape2D>> List;
 
     Shape2D();
     virtual ~Shape2D();
@@ -48,15 +46,15 @@ public:
     void draw();
 
     void setShape(const ofPolyline& shape);
-    const ofPolyline& getShape() const;
+    ofPolyline getShape() const;
 
-    ofVec3f getCenter() const;
+    glm::vec3 getCenter() const;
 
     void setColor(const ofFloatColor& color);
     ofFloatColor getColor() const;
 
 protected:
-    ofVec3f _position;
+    glm::vec3 _position;
 
     ofFloatColor _color;
 
